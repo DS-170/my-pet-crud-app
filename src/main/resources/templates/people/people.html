@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All People</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .people-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .person-card {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .person-card a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .button-container form {
+            margin: 0;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="people-list">
+    <div class="person-card" th:each="person : ${people}">
+        <a th:href="@{/people/{id}(id=${person.getId()})}" th:text="${person.getName()}" class="person-link"></a>
+    </div>
+</div>
+
+<div class="button-container">
+    <form action="/people/new" method="get">
+        <button type="submit">Add Person</button>
+    </form>
+
+    <form action="/" method="get">
+        <button type="submit">Back</button>
+    </form>
+</div>
+
+</body>
+</html>

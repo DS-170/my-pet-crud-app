@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Person Form</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        form {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+        }
+
+        .error {
+            color: darkred;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button-container form {
+            margin: 0;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<form th:method="POST" th:action="@{/people/new}" th:object="${person}">
+    <h2>New Person Form</h2>
+
+    <label for="name">Name:</label>
+    <input type="text" th:field="*{name}" id="name"/>
+    <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error description</div>
+
+    <label for="age">Age:</label>
+    <input type="number" th:field="*{age}" id="age"/>
+    <div class="error" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Error description</div>
+
+    <label for="email">Email:</label>
+    <input type="email" th:field="*{email}" id="email"/>
+    <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error description</div>
+
+    <div class="button-container">
+        <button type="submit">Create Person</button>
+    </div>
+
+</form>
+
+<br>
+
+<div class="button-container">
+    <form action="/people" method="get">
+        <button type="submit">Back</button>
+    </form>
+</div>
+
+</body>
+</html>

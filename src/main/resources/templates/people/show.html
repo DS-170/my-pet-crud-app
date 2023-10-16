@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Details</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: left;
+            flex-direction: column;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .people-list {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .people-list a {
+            margin: 1px 0;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-container form {
+            margin: 0;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<p th:text="'ID: ' + ${person.getId()}"></p>
+<p th:text="'Name: ' + ${person.getName()}"></p>
+<p th:text="'Age: ' + ${person.getAge()}"></p>
+<p th:text="'Email: ' + ${person.getEmail()}"></p>
+
+<div class="button-container">
+    <form th:action="@{/people/{id}/edit(id=${person.getId()})}" method="get">
+        <button type="submit">Edit</button>
+    </form>
+
+    <form th:method="DELETE" th:action="@{/people/{id}(id=${person.id})}">
+        <button type="submit">Delete</button>
+    </form>
+
+    <form action="/people" method="get">
+        <button type="submit">Back</button>
+    </form>
+</div>
+</body>
+</html>

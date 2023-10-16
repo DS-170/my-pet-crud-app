@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello, World!</title>
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        p {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button-container form {
+            margin: 0;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<p>Hello, World!</p>
+
+<div class="button-container">
+    <form action="/people" method="get">
+        <button type="submit">Find People</button>
+    </form>
+
+    <form action="/people/new" method="get">
+        <button type="submit">Add Person</button>
+    </form>
+</div>
+
+</body>
+</html>
