@@ -4,7 +4,7 @@ import ds.spring.mycrud.dao.PersonDAO;
 import ds.spring.mycrud.models.Person;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PeopleController {
 
-    @Autowired
     private final PersonDAO personDAO;
 
     @GetMapping("/")
@@ -23,22 +22,24 @@ public class PeopleController {
     }
 
     @GetMapping("/people")
-    public String index(Model model) {
+    public String index(@NotNull Model model) {
         model.addAttribute("people", personDAO.showAll());
         return "people/people";
     }
 
     @GetMapping("/people/{id}")
-    public String show(@PathVariable("id") Long id, Model model) {
+    public String show(@PathVariable("id") Long id, @NotNull Model model) {
         model.addAttribute("person", personDAO.showOne(id));
         return "people/show";
     }
 
     @GetMapping("/people/new")
-    public String newPerson(@ModelAttribute("person") Person person) {return "people/new";}
+    public String newPerson(@ModelAttribute("person") Person person) {
+        return "people/new";
+    }
 
     @PostMapping("/people/new")
-    public String createPerson(@Valid @ModelAttribute("person") Person person, BindingResult bindingResult,
+    public String createPerson(@Valid @ModelAttribute("person") Person person, @NotNull BindingResult bindingResult,
                                Model model) {
         if (bindingResult.hasErrors()) return "new";
 
@@ -47,7 +48,7 @@ public class PeopleController {
     }
 
     @GetMapping("/people/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
+    public String edit(@NotNull Model model, @PathVariable("id") Long id) {
         model.addAttribute("person", personDAO.showOne(id));
         return "people/edit";
     }
