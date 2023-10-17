@@ -5,7 +5,7 @@
 
 # Prerequisites: pom.xml and appropriate project structure should exist in the repository.
 
-image: maven:3.6.3
+image: maven:3.9.0
 
 pipelines:
   default:
@@ -15,7 +15,6 @@ pipelines:
           caches:
             - maven
           script:
+            - java -version
+            - mvn --version
             - mvn -B verify --file pom.xml
-          after-script:
-              # Collect checkstyle results, if any, and convert to Bitbucket Code Insights.
-            - pipe: atlassian/checkstyle-report:0.3.0
