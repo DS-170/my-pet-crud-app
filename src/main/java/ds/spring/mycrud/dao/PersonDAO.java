@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -14,6 +15,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PersonDAO {
     private final PersonRepository personRepository;
+
+    public PersonRepository getPersonRepository() {
+        return personRepository;
+    }
 
     public List<Person> showAll() {
         return personRepository.findAll();
