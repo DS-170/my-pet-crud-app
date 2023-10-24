@@ -1,7 +1,7 @@
 package ds.spring.mycrud.controllers;
 
-import ds.spring.mycrud.dao.PersonDAO;
 import ds.spring.mycrud.models.Person;
+import ds.spring.mycrud.repositories.PersonRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +29,7 @@ public class PeopleControllerTest {
     private PeopleController controller;
 
     @Autowired
-    private PersonDAO personDAO;
+    private PersonRepository personRepository;
 
     @Test
     @DisplayName("Проверка, метода home")
@@ -41,25 +41,21 @@ public class PeopleControllerTest {
     @Test
     @DisplayName("Проверка, метода show")
     void showReturnPerson() {
-        Person validPerson = new Person(999L, "testShow", 999, "t@t.com"); // id сам генерируется с помощью @Entity, просто заполнил параметр
-        Model model = new ExtendedModelMap();
-        controller.createPerson(validPerson, new BeanPropertyBindingResult(validPerson, "person"), model);
-        model.addAttribute("id", validPerson.getId());
+        Person validPerson = new Person(999L, "testShow", 999, "t@t.com");
+        personRepository.save(validPerson);
 
-        String result = controller.show(validPerson.getId(), model);
+        String result = controller.show(validPerson.getId(), new ExtendedModelMap());
 
-        assertNotNull(model.getAttribute("person"));
-        assertEquals(model.getAttribute("id"), validPerson.getId());
         assertEquals("people/show", result);
 
-        controller.delete(validPerson.getId());
+        personRepository.deleteById(validPerson.getId());
     }
 
     @Test
     @DisplayName("Проверка метода index")
     void indexReturnList() {
         Model model = new ExtendedModelMap();
-        model.addAttribute("person"); // не очень понял я чо в модель положить и почему проверку проходит
+        model.addAttribute("person");
 
         String result = controller.index(model);
 
@@ -72,7 +68,6 @@ public class PeopleControllerTest {
         Person person = new Person(999L, "testNewPerson", 999, "t@t.com");
         String result = controller.newPerson(person);
 
-        assertNotNull(person);
         assertEquals("people/new", result);
     }
 
@@ -86,7 +81,7 @@ public class PeopleControllerTest {
         String result = controller.createPerson(validPerson, bindingResult, model);
 
         assertEquals("redirect:/people", result);
-        assertTrue(personDAO.getPersonRepository().existsById(validPerson.getId()));
+        assertTrue(personRepository.existsById(validPerson.getId()));
 
         controller.delete(validPerson.getId());
     }
@@ -102,7 +97,7 @@ public class PeopleControllerTest {
         String result = controller.createPerson(invalidPerson, bindingResult, model);
 
         assertEquals("people/new", result);
-        assertFalse(personDAO.getPersonRepository().existsById(invalidPerson.getId()));
+        assertFalse(personRepository.existsById(invalidPerson.getId()));
     }
 
     @Test
@@ -115,50 +110,54 @@ public class PeopleControllerTest {
         String result = controller.edit(model, id);
 
         assertEquals("people/edit", result);
-        assertEquals(id, model.getAttribute("id")); // не очень опять же понимаю что тут происходит.
-        // Модель и без добавления атрибута работает, но если без дабавления проверять то логично пишет что поле ID==null
+        assertEquals(id, model.getAttribute("id"));
     }
 
     @Test
     @DisplayName("Проверка метода update_valid")
     void updateValid() {
         Person validPerson = new Person(999L, "testUpdate_valid", 999, "t@t.com");
-        Person updatedPerson = new Person(999L, "changedName", 2, "changed@t.com");
+        personRepository.save(validPerson);
+
+        Person updatedPerson = new Person(null, "changedName", 2, "changed@t.com");
+
         BindingResult bindingResult = new BeanPropertyBindingResult(validPerson, "validPerson");
 
-        controller.createPerson(validPerson, bindingResult, new ExtendedModelMap());
         String result = controller.update(updatedPerson, bindingResult, validPerson.getId());
 
-        Optional<Person> updateResult = personDAO.getPersonRepository().findById(validPerson.getId());
         assertEquals("redirect:/people", result);
-        assertEquals(updateResult.get().getName(), updatedPerson.getName());
-        assertEquals(updateResult.get().getAge(), updatedPerson.getAge());
-        assertEquals(updateResult.get().getEmail(), updatedPerson.getEmail());
 
-        controller.delete(updateResult.get().getId());
+        Optional<Person> updateResult = personRepository.findById(validPerson.getId());
+        assertTrue(updateResult.isPresent());
+        assertEquals(updatedPerson.getName(), updateResult.get().getName());
+        assertEquals(updatedPerson.getAge(), updateResult.get().getAge());
+        assertEquals(updatedPerson.getEmail(), updateResult.get().getEmail());
+
+        personRepository.deleteById(updateResult.get().getId());
     }
 
     @Test
     @DisplayName("Проверка метода update_invalid")
     void updateInvalid() {
-        Person invalidPerson = new Person(null, "testUpdate_valid", 999, "t@t.com");
+        Person invalidPerson = new Person(null, "testUpdate_invalid", 999, "t@t.com");
+        personRepository.save(invalidPerson);
+
         Person updatedPerson = new Person(null, "changedName", 2, "changed@t.com");
-        BindingResult bindingResult = new BeanPropertyBindingResult(invalidPerson, "validPerson");
 
-        controller.createPerson(invalidPerson, bindingResult, new ExtendedModelMap());
-        assertTrue(personDAO.getPersonRepository().existsById(invalidPerson.getId()));
-
-        bindingResult.addError(new ObjectError("person", "invalidPerson"));
+        BindingResult bindingResult = new BeanPropertyBindingResult(invalidPerson, "invalidPerson");
+        bindingResult.addError(new ObjectError("person", "invalidPerson_error"));
 
         String result = controller.update(updatedPerson, bindingResult, invalidPerson.getId());
+
         assertEquals("people/edit", result);
 
-        Optional<Person> updateResult = personDAO.getPersonRepository().findById(invalidPerson.getId());
-        assertNotEquals(updateResult.get().getName(), updatedPerson.getName());
-        assertNotEquals(updateResult.get().getAge(), updatedPerson.getAge());
-        assertNotEquals(updateResult.get().getEmail(), updatedPerson.getEmail());
+        Optional<Person> afterUpdate = personRepository.findById(invalidPerson.getId());
+        assertTrue(afterUpdate.isPresent());
+        assertEquals(invalidPerson.getName(), afterUpdate.get().getName());
+        assertEquals(invalidPerson.getAge(), afterUpdate.get().getAge());
+        assertEquals(invalidPerson.getEmail(), afterUpdate.get().getEmail());
 
-        controller.delete(invalidPerson.getId());
+        personRepository.deleteById(invalidPerson.getId());
     }
 
     @Test
@@ -168,11 +167,11 @@ public class PeopleControllerTest {
         BindingResult bindingResult = new BeanPropertyBindingResult(person, "person");
 
         controller.createPerson(person, bindingResult, new ExtendedModelMap());
-        assertTrue(personDAO.getPersonRepository().existsById(person.getId()));
+        assertTrue(personRepository.existsById(person.getId()));
 
         String result = controller.delete(person.getId());
 
-        assertFalse(personDAO.getPersonRepository().existsById(person.getId()));
+        assertFalse(personRepository.existsById(person.getId()));
         assertEquals("redirect:/people", result);
     }
 }

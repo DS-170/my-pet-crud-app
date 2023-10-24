@@ -16,10 +16,6 @@ import java.util.List;
 public class PersonDAO {
     private final PersonRepository personRepository;
 
-    public PersonRepository getPersonRepository() {
-        return personRepository;
-    }
-
     public List<Person> showAll() {
         return personRepository.findAll();
     }
