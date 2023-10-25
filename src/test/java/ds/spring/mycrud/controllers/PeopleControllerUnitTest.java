@@ -1,6 +1,5 @@
-package ds.spring.mycrud.controller;
+package ds.spring.mycrud.controllers;
 
-import ds.spring.mycrud.controllers.PeopleController;
 import ds.spring.mycrud.dao.PersonDAO;
 import ds.spring.mycrud.models.Person;
 import org.junit.jupiter.api.BeforeEach;
