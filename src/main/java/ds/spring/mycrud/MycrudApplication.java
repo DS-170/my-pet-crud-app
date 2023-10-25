@@ -13,7 +13,6 @@ public class MycrudApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MycrudApplication.class, args);
-		System.out.println("Funny fact for you: Cat is not a mouse!!!!");
 	}
 
 	@Bean

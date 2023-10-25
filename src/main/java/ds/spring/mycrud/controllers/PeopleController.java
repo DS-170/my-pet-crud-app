@@ -4,7 +4,6 @@ import ds.spring.mycrud.dao.PersonDAO;
 import ds.spring.mycrud.models.Person;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PeopleController {
 
-    @Autowired
     private final PersonDAO personDAO;
 
     @GetMapping("/")
@@ -35,12 +33,14 @@ public class PeopleController {
     }
 
     @GetMapping("/people/new")
-    public String newPerson(@ModelAttribute("person") Person person) {return "people/new";}
+    public String newPerson(@ModelAttribute("person") Person person) {
+        return "people/new";
+    }
 
     @PostMapping("/people/new")
     public String createPerson(@Valid @ModelAttribute("person") Person person, BindingResult bindingResult,
                                Model model) {
-        if (bindingResult.hasErrors()) return "new";
+        if (bindingResult.hasErrors()) return "people/new";
 
         personDAO.addNew(person);
         return "redirect:/people";
@@ -55,7 +55,7 @@ public class PeopleController {
     @PatchMapping("/people/{id}")
     public String update(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult,
                          @PathVariable("id") Long id) {
-        if (bindingResult.hasErrors()) return "edit";
+        if (bindingResult.hasErrors()) return "people/edit";
 
         personDAO.update(id, person);
         return "redirect:/people";
