@@ -41,14 +41,20 @@ public class PeopleControllerTest {
     @Test
     @DisplayName("Проверка, метода show")
     void showReturnPerson() {
-        Person validPerson = new Person(999L, "testShow", 999, "t@t.com");
+        Person validPerson = new Person(null, "testShow", 999, "t@t.com");
+        Model model = new ExtendedModelMap();
+
         personRepository.save(validPerson);
 
-        String result = controller.show(validPerson.getId(), new ExtendedModelMap());
+        Long id = validPerson.getId();
 
+        String result = controller.show(id, model);
+
+        assertNotNull(model.getAttribute("person"));
+        assertEquals(id, ((Person) model.getAttribute("person")).getId());
         assertEquals("people/show", result);
 
-        personRepository.deleteById(validPerson.getId());
+        personRepository.deleteById(id);
     }
 
     @Test
@@ -65,7 +71,7 @@ public class PeopleControllerTest {
     @Test
     @DisplayName("Проверка метода newPerson")
     void newPersonReturnNew() {
-        Person person = new Person(999L, "testNewPerson", 999, "t@t.com");
+        Person person = new Person(null, "testNewPerson", 999, "t@t.com");
         String result = controller.newPerson(person);
 
         assertEquals("people/new", result);
@@ -74,7 +80,7 @@ public class PeopleControllerTest {
     @Test
     @DisplayName("Проверка метода createPerson_valid")
     void createPersonRedirect() {
-        Person validPerson = new Person(999L, "testCreatePerson_valid", 999, "t@t.com");
+        Person validPerson = new Person(null, "testCreatePerson_valid", 999, "t@t.com");
         BindingResult bindingResult = new BeanPropertyBindingResult(validPerson, "person");
         Model model = new ExtendedModelMap();
 
@@ -103,20 +109,24 @@ public class PeopleControllerTest {
     @Test
     @DisplayName("Проверка метода edit")
     void editReturn() {
-        Long id = 999L;
+        Person person = new Person(null, "testEdit", 999, "t@t.com");
         Model model = new ExtendedModelMap();
-        model.addAttribute("id", id);
+
+        personRepository.save(person);
+        Long id = person.getId();
 
         String result = controller.edit(model, id);
 
         assertEquals("people/edit", result);
-        assertEquals(id, model.getAttribute("id"));
+        assertEquals(id, ((Person) model.getAttribute("person")).getId());
+
+        personRepository.deleteById(id);
     }
 
     @Test
     @DisplayName("Проверка метода update_valid")
     void updateValid() {
-        Person validPerson = new Person(999L, "testUpdate_valid", 999, "t@t.com");
+        Person validPerson = new Person(null, "testUpdate_valid", 999, "t@t.com");
         personRepository.save(validPerson);
 
         Person updatedPerson = new Person(null, "changedName", 2, "changed@t.com");
